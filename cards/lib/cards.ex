@@ -1,6 +1,5 @@
 defmodule Cards do
 
-  # creating deck
   def create_deck do
     values = ["Ace", "Two", "Three", "Four", "Five"]
     suits = ["Spades", "Clubs", "Diamonds", "Hearts"]
@@ -10,38 +9,44 @@ defmodule Cards do
     end
   end
 
-  # shuffle the deck
   def shuffle(deck) do
     Enum.shuffle(deck)
   end
 
-  # is deck contains the card
   def contains?(deck, card) do
     Enum.member?(deck, card)
   end
 
-  # deal function that uses split to segregate the no_of_cards
   def deal(deck, hand_size) do
     { cards, rest_cards } = Enum.split(deck, hand_size)
     cards
   end
 
-  def save_deck_file(deck, filename) do
+  def save(deck, filename) do
     binary = :erlang.term_to_binary(deck)
-    binary
     File.write(filename, binary)
   end
 
-  def read_deck_file(filename) do
+  def load(filename) do
     { status, binary } = File.read(filename)
 
-    # case pattern matching!
-
-    case status do
-      :ok -> :erlang.binary_to_term(binary)
-      :error -> "Something went wrong! may be file not found!"
+    case File.read(filename) do
+      { :ok, binary } -> binary
+      { :error, _reason } -> "Something went wrong! may be file not found! Reason = #{_reason}"
     end
+  end
+
+
+  def create_hand(hand_size) do
+    # deck = Cards.create_deck()
+    # deck = Cards.shuffle(deck)
+    # Cards.deal(deck, hand_size)
+
+    # let's make use of pipe operator. whatever returned from previous function that will automatically
+    # goes to next function as firt parameter. $$ THIS IS PRETTY COOL 😎 $$
+    Cards.create_deck() |> Cards.shuffle() |> Cards.deal(hand_size)
 
   end
+
 
 end
